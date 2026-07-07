@@ -20,6 +20,14 @@ console.log(response2.contents);
   <body>
     <h1>ブログ一覧</h1>
     <h2>PRテスト用のコメント</h2>
+    <h2>カテゴリ一覧</h2>
+    <ul>
+      {response2.contents.map((category: any) => (
+        <li>
+          <h2>{category.name}</h2>
+        </li>
+      ))}
+    </ul>
     <ul>
       {/* Vueの v-for の代わりに、JavaScriptの map を使ってループします */}
       {response.contents.map((blog: any) => (
