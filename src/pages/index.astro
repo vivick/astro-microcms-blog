@@ -11,6 +11,9 @@ const client = createClient({
 
 // ブログの一覧を取得して「response」という変数に入れる
 const response = await client.get({ endpoint: "blogs" });
+const response2 = await client.get({ endpoint: "categories" });
+console.log(response.contents);
+console.log(response2.contents);
 ---
 
 <html lang="ja">
