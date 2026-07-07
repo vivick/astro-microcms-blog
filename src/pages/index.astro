@@ -1,0 +1,39 @@
+---
+// 1. 【コードフェンス（Nuxtでいう <script setup> ）】
+// ここでmicroCMSのAPIを叩いて、記事データを取得する
+
+import { createClient } from 'microcms-js-sdk';
+
+const client = createClient({
+  serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
+  apiKey: import.meta.env.MICROCMS_API_KEY,
+});
+
+// ブログの一覧を取得して「response」という変数に入れる
+const response = await client.get({ endpoint: "blogs" });
+---
+
+<html lang="ja">
+  <body>
+    <h1>ブログ一覧</h1>
+    <ul>
+      {/* Vueの v-for の代わりに、JavaScriptの map を使ってループします */}
+      {response.contents.map((blog: any) => (
+        <li>
+          <h2>{blog.title}</h2>
+          <p>{blog.publishedAt}</p>
+        </li>
+      ))}
+    </ul>
+  </body>
+</html>
+
+<style lang="scss">
+// ここに使い慣れたSCSSを書けます！
+h1 {
+  color: #333;
+  h2 {
+    font-size: 1.5rem;
+  }
+}
+</style>
