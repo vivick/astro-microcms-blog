@@ -1,0 +1,30 @@
+---
+// src/pages/news/[id].astro
+
+// 1. 詳細用の getNewsDetail も一緒にインポートする
+import { getNews, getNewsDetail } from "../../libs/microcms"
+// 2. 【超重要】Astroに「存在するニュースIDのリスト」を教える関数
+export async function getStaticPaths() {
+  const response = await getNews({ fields: ["id"] })
+
+  console.log(response.contents)
+
+  // microCMSから取得したIDの配列をAstroが認識できる形に変換して返す
+  return response.contents.map((news) => ({
+    params: { id: news.id },
+  }))
+}
+
+// 3. ユーザーがアクセスしたURLの「id」をキャッチする
+const { id } = Astro.params
+
+// 4. そのidを使って、microCMSから1件分の詳細データを引っ張ってくる
+const news = await getNewsDetail(id)
+---
+
+{/* テスト表示用のコード */}
+<div>
+  <h2>{news.title}</h2>
+  <p>日付: {news.date}</p>
+  <div set:html={news.content} />
+</div>
