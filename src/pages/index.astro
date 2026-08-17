@@ -1,42 +1,66 @@
 ---
 // 1. 【コードフェンス（Nuxtでいう <script setup> ）】
 // ここでmicroCMSのAPIを叩いて、記事データを取得する
-
-import { createClient } from 'microcms-js-sdk';
-
-const client = createClient({
-  serviceDomain: import.meta.env.MICROCMS_SERVICE_DOMAIN,
-  apiKey: import.meta.env.MICROCMS_API_KEY,
-});
-
-// ブログの一覧を取得して「response」という変数に入れる
-const response = await client.get({ endpoint: "blogs" });
-const response2 = await client.get({ endpoint: "categories" });
-console.log(response.contents);
-console.log(response2.contents);
+import { getNews, getBlog } from "../libs/microcms" // microCMSからデータを取る関数
+const newsResponse = await getNews({
+  fields: ["id", "title", "date", "summary"],
+})
+const blogResponse = await getBlog({
+  fields: ["id", "title", "date", "content"],
+})
 ---
 
 <html lang="ja">
   <body>
-    <h1>ブログ一覧</h1>
-    <ul>
-      {/* Vueの v-for の代わりに、JavaScriptの map を使ってループします */}
-      {response.contents.map((blog: any) => (
-        <li>
-          <h2>{blog.title}</h2>
-          <p>{blog.publishedAt}</p>
-        </li>
-      ))}
-    </ul>
+    <h1>headless CMSを使ったAstroブログでつ</h1>
+
+    <section class="container news">
+      <h2>ニュース一覧</h2>
+      <!-- 2. 下の「HTML領域」は、PHPのように超シンプルにループを回すだけ（returnも不要！） -->
+      <ul class="news-list">
+        {
+          newsResponse.contents.map((news: any) => (
+            <li class="news-item">
+              <p class="news-item-date">{news.date}</p>
+              <h2 class="news-item-title">{news.title}</h2>
+              <a href={`/news/${news.id}`}>詳細</a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+    <section class="container blog">
+      <h2>ブログ一覧</h2>
+      <ul class="blog-list">
+        {
+          blogResponse.contents.map((blog: any) => (
+            <li class="blog-item">
+              <p class="blog-item-date">{blog.date}</p>
+              <h2 class="blog-item-title">{blog.title}</h2>
+              <a href={`/blog/${blog.id}`}>詳細</a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
   </body>
 </html>
 
 <style lang="scss">
-// ここに使い慣れたSCSSを書けます！
-h1 {
-  color: #333;
-  h2 {
-    font-size: 1.5rem;
+  // ここに使い慣れたSCSSを書けます！
+  h1 {
+    color: #333;
+    h2 {
+      font-size: 1.5rem;
+    }
   }
-}
+  .news-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .news-item {
+    border: 1px solid #333;
+    padding: 1rem;
+  }
 </style>
